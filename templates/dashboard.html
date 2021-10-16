@@ -1,0 +1,245 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}
+Dashboard
+{% endblock %}
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
+{% endblock %}
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+   <div class="container-fluid">
+      <div class="navbar-header">
+         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+         <span class="sr-only">Toggle navigation</span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         </button>
+         <a class="navbar-brand" href="#">Nexas Core</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+         <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+         </ul>
+         <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+         </form>
+      </div>
+   </div>
+</nav>
+<div class="container-fluid">
+<div class="row">
+   <div class="col-sm-3 col-md-2 sidebar">
+      <ul class="nav nav-sidebar">
+         <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+         <li><a href="{{ url_for('report') }}">Reports</a></li>
+         <li><a href="{{ url_for('analytics') }}">Analytics</a></li>
+         <li><a href="#exports">Export</a></li>
+      </ul>
+   </div>
+   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">Welcome, {{ name }}</h1>
+      <br>
+      <h2 class="page-header">Your API key: {{ api_key }}</h2>
+    <!--    <div class="container"> -->
+        <div class="row">
+           <div class="col md-12">
+              <div class="jumbotron p-3">
+                 <h2>Manage <b> Devices </b> <button type="button" class="btn btn-success float-right"
+                    data-toggle="modal" data-target="#mymodal">Add New Device</button> </h2>
+                 {% with messages = get_flashed_messages() %} 
+                 {% if messages %}
+                 {% for message in messages %}
+                 <div class="alert alert-success alert-dismissable" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                    <span aria-hidden="true">x</span>
+                    </button>
+                    {{message}}
+                 </div>
+                 {% endfor %}
+                 {% endif %}
+                 {% endwith %}
+                 <table class="table table-hover table-dark">
+                    <tr>
+                       <!-- <th>Entry ID</th> -->
+                       <th>Device ID</th>
+                       <th>Device Label</th>
+                       <th>Sensor Type</th>
+                       <th>Status</th>
+                       <th>Last Update</th>
+                       <th>Alert Condition</th>
+                       <th>Action</th>
+                    </tr>
+                    {% for row in all_device_data %} 
+                    <tr>
+                       <!-- <td>{{row.entry_id}}</td> -->
+                       <td>{{row.device_id}}</td>
+                       <td>{{row.device_label}}</td>
+                       <td>{{row.sensor_type}}</td>
+                       <td>{{row.status}}</td>
+                       <td>{{row.LastUpdate}}</td>
+                       <td>{{row.alert_condition}}</td>
+                       <td>
+                          <a href="/update/{{row.entry_id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.entry_id}}">Edit</a>
+                          <a href="/delete/{{row.entry_id}}" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure To Delete ?')">Delete</a>
+                       </td>
+                    </tr>
+                    <!-- Modal Edit Device-->
+                    <div id="modaledit{{row.entry_id}}" class="modal fade" role="dialog">
+                       <div class="modal-dialog">
+                          <div class="modal-content">
+                             <div class="modal-header">
+                                <h4 class="modal-title">Update Information</h4>
+                             </div>
+                             <div class="modal-body">
+                                <form action="{{url_for('update')}}" method="POST">
+                                   <div class="form-group">
+                                      <!--   <label>Entry ID</label>
+                                         <input type="hidden"  name="id" value="">
+                                         
+                                         <input type="number" class="form-control" name="entry_id" value="24">
+                                         
+                                         
+                                         </div>
+                                         -->
+                                      <div class="form-group">
+                                         <label>Device ID</label>
+                                         <input type="hidden"  name="id" value="{{row.entry_id}}">
+                                         <input type="number" class="form-control" name="device_id" value="{{row.device_id}}">
+                                      </div>
+                                      <div class="form-group">
+                                         <label>Device Label:</label>
+                                         <input type="text" class="form-control" name="device_label" value="{{row.device_label}}">
+                                      </div>
+                                        <div class="form-group">
+                                         <label>Sensor Type:</label>
+                                         <input type="text" class="form-control" name="sensor_type" value="{{row.sensor_type}}" readonly>
+                                      </div> 
+                                      <div class="form-group">
+                                         <label>Status:</label>
+                                         <input type="text" class="form-control" name="status" value="{{row.status}}">
+                                      </div>
+                                      <div class="form-group">
+                                         <label>Alert Condition:</label>
+                                         <input type="number" class="form-control" name="alert_condition" value="{{row.alert_condition}}">
+                                      </div>
+                                      <div class="form-group">
+                                         <button class="btn btn-primary" type="submit">Update</button>
+                                      </div>
+                                </form>
+                                </div>
+                                <div class="modal-footer">
+                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                             </div>
+                          </div>
+                       </div>
+                       {% endfor %}
+                 </table>
+                 </div>
+                 <!-- Modal Add device-->
+                 <div id="mymodal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                       <div class="modal-content">
+                          <div class="modal-header">
+                             <h4 class="modal-title">Add Device</h4>
+                          </div>
+                          <div class="modal-body">
+                             <form action="{{url_for('insert')}}" method="POST">
+                                <!--      <div class="form-group">
+                                   <label>Entry ID:</label>
+                                   <input type="number" class="form-control" name="entry_id" required="1">
+                                   
+                                   
+                                   </div>
+                                   -->
+                                <div class="form-group">
+                                   <label>Device ID:</label>
+                                   <input type="number" class="form-control" name="device_id" required="1">
+                                </div>
+                                <div class="form-group">
+                                   <label>Device Label:</label>
+                                   <input type="text" class="form-control" name="device_label" required="1">
+                                </div>
+                                <div class="form-group">
+                                   <label>Sensor Type:</label>
+                                   <input type="text" class="form-control" name="sensor_type" required="1">
+                                </div>
+                                <div class="form-group">
+                                   <label>Status:</label>
+                                   <input type="text" class="form-control" name="status" required="1">
+                                </div>
+                                <div class="form-group">
+                                   <label>Alert Condition:</label>
+                                   <input type="number" class="form-control" name="alert_condition">
+                                </div>
+                                <div class="form-group">
+                                   <button class="btn btn-primary" type="submit">Add Device</button>
+                                </div>
+                             </form>
+                          </div>
+                          <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        <!--    </div> -->
+
+   <!--   <h2 class="sub-header">Sensor Data Details</h2>
+      <div class="table-responsive">
+         <table class="table table-striped">
+            <thead>
+               <tr>
+               <tr>
+                  <th>Device ID</th>
+                  <th>Sensor Type</th>
+                  <th>Value 1</th>
+                  <th>Value 2</th>
+                  <th>Time-Stamp</th>
+                  <th>Entry ID</th>
+               </tr>
+               </tr>
+            </thead>
+            <tbody>
+               {% for row in all_database_data %} 
+               <tr>
+                  <td>{{row.id}}</td>
+                  <td>{{row.sensor_type}}</td>
+                  <td>{{row.value_1}}</td>
+                  <td>{{row.value_2}}</td>
+                  <td>{{row.datetime_stamp}}</td>
+                  <td>{{row.entryID}}</td>
+               </tr>
+               {% endfor %}
+            </tbody>
+         </table>
+      </div>
+   </div> -->
+   <div class="row">
+      <div class="col md-12">
+         <div class="jumbotron p-3">
+            <h2>How to Use </h2>
+            <br> 
+            <div>
+             <b> Step 1.</b> Doownload or install curl
+             <h5>$ yum install curl -y</h5> 
+             <br>
+             <b> Step 2.</b> Define your credentials, device ID & other details from the  in the script
+             <h5>Note: You need to define configure your credentials & Device details</h5> 
+             <br>
+             <b> Step 3.</b> Run the script
+             <h5>$ bash nexas-core.sh</h5> 
+            </div>
+            </div>
+         </div>
+      </div>
+</div>
+{% endblock %}
+
