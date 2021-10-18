@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, make_response, redirect, url_
 import os
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm 
-from wtforms import StringField, passwordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import InputRequired, Email, Length
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -27,28 +27,23 @@ app = Flask(__name__)
 
 
 # Google Cloud SQL variables for Setting up configuration
-password ='akmwvd0HKcn218Dn'
-#password = os.environ["PASSWORD"]
-ip_address ='35.200.222.64'
-#ip_address = os.environ["IP_ADDRESS"]
-dbname ='users'
-#dbname = os.environ["DBNAME"]
-project_id ='halogen-ethos-275711'
-#project_id = os.environ["PROJECT_ID"]
-instance_name ='nexas-core' 
-#instance_name = os.environ["INSTANCE_NAME"]
+PASSWORD ='akmwvd0HKcn218Dn'
+PUBLIC_IP_ADDRESS ='35.200.222.64'
+DBNAME ='users'
+PROJECT_ID ='halogen-ethos-275711'
+INSTANCE_NAME ='nexas-core' 
 
 # Flask application configuration
 app.config["SECRET_KEY"] = "mysecretkey"
-app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+mysqldb://root:{password}@{ip_address}:3306/{dbname}?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
-app.config['SQLALCHEMY_BINDS']= {'sensors_data' : f"mysql+mysqldb://root:{password}@{ip_address}:3306/sensors_data?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core",
-                                  'devices' : f"mysql+mysqldb://root:{password}@{ip_address}:3306/devices?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
+app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/{DBNAME}?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
+app.config['SQLALCHEMY_BINDS']= {'sensors_data' : f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/sensors_data?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core",
+                                  'devices' : f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/devices?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
                                 }
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= True
 
-#URI1= f"mysql+mysqldb://root:{password}@{ip_address}:3306/{dbname}?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
-#URI2= f"mysql+mysqldb://root:{password}@{ip_address}:3306/sensors_data?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
-#URI3= f"mysql+mysqldb://root:{password}@{ip_address}:3306/devices?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
+#URI1= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/{DBNAME}?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
+#URI2= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/sensors_data?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
+#URI3= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/devices?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
 
 bootstrap = Bootstrap(app)
 
@@ -104,17 +99,19 @@ class devices(db.Model):
     device_id = db.Column(db.Integer, unique=True)
     device_label = db.Column(db.String(100))
     sensor_type = db.Column(db.String(100))
+    sensor_data_url = db.Column(db.String(100))
     status = db.Column(db.String(20), default='ACTIVE')
     LastUpdate = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     alert_condition = db.Column(db.Integer)
  
  
-    def __init__(self,username, device_id, device_label, sensor_type, status, LastUpdate, alert_condition):
+    def __init__(self,username, device_id, device_label, sensor_type, sensor_data_url, status, LastUpdate, alert_condition):
          
         self.username = username
         self.device_id = device_id
         self.device_label = device_label
         self.sensor_type = sensor_type
+        self.sensor_data_url = sensor_data_url
         self.status = status
         self.LastUpdate = LastUpdate
         self.alert_condition = alert_condition
@@ -126,13 +123,13 @@ def load_user(user_id):
 
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
-    password = passwordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+    password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
     remember = BooleanField('remember me')
 
 class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
-    password = passwordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+    password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
 
 
@@ -221,11 +218,12 @@ def insert():
         device_id = request.form['device_id']
         device_label = request.form['device_label']
         sensor_type = request.form['sensor_type']
+        sensor_data_url = '{}/{}/{}'.format(current_user.username, current_user.apikey, device_id)
         status = request.form['status']
         LastUpdate = datetime.datetime.utcnow()
         alert_condition = request.form['alert_condition']
 # add cloud pubsub & cloud functions to perform the task
-        new_device = devices(username, device_id, device_label, sensor_type, status, LastUpdate, alert_condition)
+        new_device = devices(username, device_id, device_label, sensor_type, sensor_data_url, status, LastUpdate, alert_condition)
         db.session.add(new_device)
         db.session.commit()
 
@@ -262,6 +260,18 @@ def delete(entry_id):
     flash("Sensor data deleted Successfully.")
 
     return redirect(url_for('dashboard'))
+
+@app.route('/data_details/<entry_id>/', methods = ['GET', 'POST'])
+def data_details(entry_id):
+    new_device = devices.query.get(entry_id)
+    all_data = SensorData.query.all()
+    all_device = devices.query.filter_by(username=current_user.username)
+    #new_ref = fdb.collection('data/userinfo/devices/sensor-device/thermal sensor')
+    new_ref = fdb.collection('{}'.format(new_device.sensor_data_url))
+    #all_data = SensorData.query.all()
+    docs = new_ref.stream()
+    #all_device = devices.query.filter_by(username=current_user.username)
+    return render_template('data_details.html', firestore_data = docs, name=current_user.username, api_key=current_user.apikey, all_database_data = all_data, all_device_data = all_device)
 
 #@app.route('/post_data/<myusername>/<api_key>/<int:device_id>', methods = ['POST'])
 @app.route('/post_data/', methods = ['POST'])
@@ -302,6 +312,13 @@ def post_data():
     else: 
         return {"Error": "Inserted API Key is not valied or you don't added device"} 
 
+new_ref = fdb.collection('data/userinfo/devices/sensor-device/thermal sensor')
+   #all_data = SensorData.query.all()
+docs = new_ref.stream()
+
+for doc in new_ref.stream():
+   print(u'{} => {}'.format(doc.id, doc.to_dict()))
 
 if __name__ == '__main__':
     app.run(debug=True)
+
