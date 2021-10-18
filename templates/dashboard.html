@@ -49,7 +49,7 @@ Dashboard
         <div class="row">
            <div class="col md-12">
               <div class="jumbotron p-3">
-                 <h2>Manage <b> Devices </b> <button type="button" class="btn btn-success float-right"
+                 <h2>Manage <b> Devices </b> <button type="button" class="btn btn-success float-right "
                     data-toggle="modal" data-target="#mymodal">Add New Device</button> </h2>
                  {% with messages = get_flashed_messages() %} 
                  {% if messages %}
@@ -84,6 +84,7 @@ Dashboard
                        <td>{{row.LastUpdate}}</td>
                        <td>{{row.alert_condition}}</td>
                        <td>
+                          <a href="/data_details/{{row.entry_id}}" class="btn btn-info btn-xs" >Details</a>
                           <a href="/update/{{row.entry_id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.entry_id}}">Edit</a>
                           <a href="/delete/{{row.entry_id}}" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure To Delete ?')">Delete</a>
                        </td>
