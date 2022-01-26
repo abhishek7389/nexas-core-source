@@ -58,9 +58,11 @@ Pub/Sub(For pipelining the whole infra)
 
 ## Architectural Overview -
 
+![alt text](https://github.com/abhishek7389/nexas-core-source/blob/master/Images%20source/Nexas_Core(Architectural%20Diagram).drawio%20(6).png)
 
 ## Flow Chart -
 
+![alt text](https://github.com/abhishek7389/nexas-core-source/blob/master/Images%20source/Nexas_Core(Flow%20Start).drawio.png)
 
 ## Upcoming Features
 
@@ -70,6 +72,6 @@ Pub/Sub(For pipelining the whole infra)
 
 - Additional Data Ingestion Methods
 
-Note: This repo is used to automate CI/CD Pipeline for Nexas core application - An IoT platform for your data.
+# Note: This repo is used to automate CI/CD Pipeline for Nexas core application - An IoT platform for your data.
 
 
