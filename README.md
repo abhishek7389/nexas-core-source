@@ -1,12 +1,12 @@
-### Nexas Core - An IoT platform for your data.
+# Nexas Core - An IoT platform for your data.
 
 
 ## What is Nexas Core?
 In this changing climate, it is not easy task to  collect the realtime data from your own environment  & make some useful decision based on it like if you want to get some insights about your farm for upcoming yields then how you can achieve this.This can be achieved using IOT but to get insights,  generally we all using the public or generalize datasets,  So we need a solution where we can target a specific environment to a precise insights.
 
-All these we can do using Nexas Core 
+For all these, we have Nexas Core 
 
-# Nexas Core is a platform for IoT data solutions,  where user can register there sensor devices, setup alerts, visualize the data, create dataset & download the data to create models with their own environmental entities.
+## Nexas Core is a platform for IoT data solutions,  where user can register there sensor devices, setup alerts, visualize the data, create dataset & download the data to create models with their own environmental entities.
 
 ## Features
 
