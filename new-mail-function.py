@@ -65,7 +65,7 @@ def nexas_alert_new(event, context):
             print(new3)
             log = logging.getLogger(__name__)
 
-            SENDGRID_API_KEY = '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'
+            SENDGRID_API_KEY = os.environ['SENDGRID_APIKEY_VAR']
             sg = SendGridAPIClient(SENDGRID_API_KEY)
 
             APP_NAME = "Nexas Core"
@@ -90,7 +90,7 @@ def nexas_alert_new(event, context):
 
             message = Mail(
                 to_emails= client_mail_id,
-                from_email=Email('gulabkhatri102@gmail.com', "Nexas Core Support"),
+                from_email=Email('g<SAMPLE_MAIL>', "Nexas Core Support"),
                 subject=f"Alert Condition met on {APP_NAME}",
                 html_content=html_content
                 )
