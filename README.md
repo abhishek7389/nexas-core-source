@@ -72,7 +72,6 @@ Pub/Sub(For pipelining the whole infra)
 
 - Additional Data Ingestion Methods
 
-
-<b>Note:</b> This repo is used to automate CI/CD Pipeline for Nexas core application - An IoT platform for your data.
+# Stay tuned for the new updates
 
 
