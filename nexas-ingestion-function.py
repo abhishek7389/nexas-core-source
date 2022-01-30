@@ -19,7 +19,8 @@ db_name2 = "devices"
 #db_user = os.environ['DBUSER']
 db_user = "root"
 db_password = os.environ['DBPASS']
-#db_password = "akmwvd0HKcn218Dn"
+#db_password = ""
+project_id = os.environ['PROJECT']
 
 db_name3 = "users" #os.environ['DB3'] #"users"
 table_name3 = "user" #os.environ['TABLE3'] #"user"
@@ -27,7 +28,7 @@ table_name3 = "user" #os.environ['TABLE3'] #"user"
 #table_field = "id, sensor_type, value_1, value_2"
 
 
-topic_path = 'projects/halogen-ethos-275711/topics/alert-mail'
+topic_path = 'projects/project_id/topics/alert-mail'
 
 # If your database is MySQL, uncomment the following two lines:
 driver_name = 'mysql+pymysql'
