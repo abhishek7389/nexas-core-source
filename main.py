@@ -21,29 +21,29 @@ from google.cloud import firestore
 
 # Configuring your service account credentials 
 #os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= "/home/abhisheksharma/Downloads/default-key.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= "./nexas.json"
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= "<PATH TO THE SERVICE ACCOUNT KEY>"
 
 app = Flask(__name__)
 
 
 # Google Cloud SQL variables for Setting up configuration
-PASSWORD ='akmwvd0HKcn218Dn'
-PUBLIC_IP_ADDRESS ='35.200.222.64'
-DBNAME ='users'
-PROJECT_ID ='halogen-ethos-275711'
-INSTANCE_NAME ='nexas-core' 
+PASSWORD =os.environ.get('DB_PASSWORD')
+#PUBLIC_IP_ADDRESS =''
+DBNAME =os.environ.get('DB_NAME')
+PROJECT_ID =$DEVSHELL_PROJECT_ID
+INSTANCE_NAME =os.environ.get('INSTANCE_NAME')
 
 # Flask application configuration
-app.config["SECRET_KEY"] = "mysecretkey"
-app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/{DBNAME}?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
-app.config['SQLALCHEMY_BINDS']= {'sensors_data' : f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/sensors_data?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core",
-                                  'devices' : f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/devices?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
+app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
+app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/{DBNAME}?unix_socket=/cloudsql/PROJECT_ID:asia-south1:nexas-core"
+app.config['SQLALCHEMY_BINDS']= {'sensors_data' : f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/sensors_data?unix_socket=/cloudsql/PROJECT_ID:asia-south1:nexas-core",
+                                  'devices' : f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/devices?unix_socket=/cloudsql/PROJECT_ID:asia-south1:nexas-core"
                                 }
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= True
 
-#URI1= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/{DBNAME}?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
-#URI2= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/sensors_data?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
-#URI3= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/devices?unix_socket=/cloudsql/halogen-ethos-275711:asia-south1:nexas-core"
+#URI1= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/{DBNAME}?unix_socket=/cloudsql/PROJECT_ID:asia-south1:nexas-core"
+#URI2= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/sensors_data?unix_socket=/cloudsql/PROJECT_ID:asia-south1:nexas-core"
+#URI3= f"mysql+mysqldb://root:{PASSWORD}@{PUBLIC_IP_ADDRESS}:3306/devices?unix_socket=/cloudsql/PROJECT_ID:asia-south1:nexas-core"
 
 bootstrap = Bootstrap(app)
 
@@ -300,7 +300,7 @@ def post_data():
 
 #header -> exract the key from the header & get details about the user 
 
-        topic_path = 'projects/halogen-ethos-275711/topics/flask-test'
+        topic_path = 'projects/PROJECT_ID/topics/flask-test'
 
         publisher = pubsub_v1.PublisherClient()
 
