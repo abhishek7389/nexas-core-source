@@ -66,9 +66,13 @@ Pub/Sub(For pipelining the whole infra)
 
 ## Upcoming Features
 
+- Machine Learning Capabilities with Vertex AI 
+
+- E-commerce & Financial Insight Portal
+
 - Additional Device Support
 
-- Powerful Visualization Features..
+- Powerful Visualization Features.
 
 - Additional Data Ingestion Methods
 
